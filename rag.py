@@ -15,6 +15,11 @@ import textwrap
 from IPython.display import display, Markdown, Latex
 
 
+# Access the API key from secrets
+api_key = st.secrets["OPENAI_API_KEY"]
+
+# Set the API key in the environment
+os.environ["OPENAI_API_KEY"] = api_key
 
 # defining the model here
 model = ChatOpenAI(model="gpt-4-turbo")

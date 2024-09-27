@@ -41,18 +41,24 @@ prompt  = ChatPromptTemplate.from_template(template)
 
 
 def read_pdfs(uploaded_files):
-  combined_pdfs = []  
-  for pdf_file in uploaded_files:
-        st.subheader(pdf_file.name)
-        # Create a PDF reader object
-        loader = PyPDFLoader(pdf_file)        
-        # Initialize a variable to store text content
-        pdf_text = loader.load()
-        combined_pdfs.extend(pdf_text)
-        # splitting the text into multiple chunks to save in the vector DB
-  text_splitter = RecursiveCharacterTextSplitter(chunk_size= 1000, chunk_overlap = 20)    
-  documents = text_splitter.split_documents(combined_pdfs)
-  return documents
+    combined_pdfs = []  
+    for pdf_file in uploaded_files:
+        with open(temp_file_path, "wb") as f:
+            f.write(pdf_file.getbuffer())
+        try:
+            loader = PyPDFLoader(temp_file_path)
+            documents = loader.load() 
+            st.subheader(pdf_file.name)
+            pdf_text = loader.load()
+            combined_pdfs.extend(pdf_text)
+        except Exception as e:
+            st.error(f"Error loading {pdf_file.name}: {e}")
+
+        os.remove(temp_file_path)
+    
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size= 1000, chunk_overlap = 20)
+    documents = text_splitter.split_documents(combined_pdfs)
+    return documents
 
       
 # Display the extracted text

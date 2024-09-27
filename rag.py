@@ -16,10 +16,19 @@ from IPython.display import display, Markdown, Latex
 
 
 
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+# defining the model here
+model = ChatOpenAI(model="gpt-4-turbo")
 
-st.write(f"My environment variable: {my_env_var}")
-st.write(f"My API key: {api_key}")
+# parser is to parse the output contents into more meaninful ormat
+parser = StrOutputParser()
 
 
+template = """
+There is a context i will prodive you based on that you can answer some questions. The answer should be detailed and scientiic. if possible inclcude equations.
+Context : {context}
+question : {question}
+"""
+
+prompt  = ChatPromptTemplate.from_template(template)
+st.write(prompt.format(context = 'context', question  = 'question'))
 st.write('Hello World')

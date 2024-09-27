@@ -1,4 +1,5 @@
 openai 
+ipython
 pypdf
 langchain
 langchain-openai

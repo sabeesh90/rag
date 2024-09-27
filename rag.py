@@ -43,6 +43,7 @@ prompt  = ChatPromptTemplate.from_template(template)
 def read_pdfs(uploaded_files):
     combined_pdfs = []  
     for pdf_file in uploaded_files:
+        temp_file_path = f"./temp_{pdf_file.name}"
         with open(temp_file_path, "wb") as f:
             f.write(pdf_file.getbuffer())
         try:

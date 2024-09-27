@@ -9,7 +9,7 @@ pypdf
 faiss-cpu
 langchain[docarray]
 docarray
-pydantic==1.10.8
+pydantic==1.9.0
 pytube 
 python-dotenv
 tiktoken 

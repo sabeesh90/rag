@@ -38,6 +38,8 @@ Context : {context}
 question : {question}
 """
 prompt  = ChatPromptTemplate.from_template(template)
+embeddings = OpenAIEmbeddings()
+# vs2 = FAISS.from_documents(documents, embeddings)
 
 
 def read_pdfs(uploaded_files):

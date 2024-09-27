@@ -85,7 +85,8 @@ if uploaded_files:
     )
 
     output = chain.invoke("How to enhane the performance of ERP andn EP detection. Explain in detail")
-    display(Markdown(output))
+    # display(Markdown(output))
+    st.markdown(output)
   
 else:
     st.warning("Please upload one or more PDF files.")

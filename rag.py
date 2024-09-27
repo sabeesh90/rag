@@ -16,5 +16,10 @@ from IPython.display import display, Markdown, Latex
 
 
 
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+
+st.write(f"My environment variable: {my_env_var}")
+st.write(f"My API key: {api_key}")
+
 
 st.write('Hello World')

@@ -15,12 +15,16 @@ import textwrap
 from IPython.display import display, Markdown, Latex
 
 
+def format_output(text):
+    # Wrap the text to a fixed width (e.g., 80 characters)
+    wrapped_text = textwrap.fill(text, width=80)
+    print(wrapped_text)
+
+
 # Access the API key from secrets
 api_key = st.secrets["OPENAI_API_KEY"]
-
 # Set the API key in the environment
 os.environ["OPENAI_API_KEY"] = api_key
-
 # defining the model here
 model = ChatOpenAI(model="gpt-4-turbo")
 
@@ -33,7 +37,48 @@ There is a context i will prodive you based on that you can answer some question
 Context : {context}
 question : {question}
 """
-
 prompt  = ChatPromptTemplate.from_template(template)
-st.write(prompt.format(context = 'context', question  = 'question'))
+
+
+def read_pdfs(uploaded_files):
+  combined_pdfs = []  
+  for pdf_file in uploaded_files:
+        st.subheader(pdf_file.name)
+        # Create a PDF reader object
+        loader = PyPDFLoader(pdf_file)        
+        # Initialize a variable to store text content
+        pdf_text = loader.load()
+        combined_pdfs.extend(pdf_text)
+        # splitting the text into multiple chunks to save in the vector DB
+  text_splitter = RecursiveCharacterTextSplitter(chunk_size= 1000, chunk_overlap = 20)    
+  documents = text_splitter.split_documents(combined_pdfs)
+  return documents
+
+      
+# Display the extracted text
+
+# Streamlit app layout
+st.title("Upload Multiple PDF Files")
+
+# File uploader for PDFs
+uploaded_files = st.file_uploader("Choose PDF files", type="pdf", accept_multiple_files=True)
+
+# Check if files are uploaded
+if uploaded_files:
+    st.success(f"{len(uploaded_files)} files uploaded.")
+    documents = read_pdfs(uploaded_files)  # Read and display the content of the PDFs
+    vs2 = DocArrayInMemorySearch.from_documents(documents, embeddings)
+    chain = (
+    {"context": vs2.as_retriever(), "question" : RunnablePassthrough()}
+    | prompt
+    | model
+    | parser
+    )
+
+    output = chain.invoke("How to enhane the performance of ERP andn EP detection. Explain in detail")
+    display(Markdown(output))
+  
+else:
+    st.warning("Please upload one or more PDF files.")
+
 st.write('Hello World')

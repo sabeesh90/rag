@@ -68,6 +68,9 @@ def read_pdfs(uploaded_files):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size= 1000, chunk_overlap = 20)
     documents = text_splitter.split_documents(combined_pdfs)
     return documents
+    
+def create_combined_input(context, question, chat_history):
+        return f"Context: {context}\nQuestion: {question}\nChat History: {chat_history}"
 
 # Streamlit app layout
 st.title("Upload Multiple PDF Files")
@@ -115,11 +118,19 @@ if prompt := st.chat_input("Hei Sabeesh!"):
 
     # response = f"Echo: {prompt}"
     # response = chain.invoke(prompt)
-    response = chain.invoke({
-        "context": vs2.as_retriever(),
-        "question": prompt, 
-        "chat_history": chat_history_str
-    })
+    # response = chain.invoke({
+    #     "context": vs2.as_retriever(),
+    #     "question": prompt, 
+    #     "chat_history": chat_history_str
+    # })
+
+    combined_input = create_combined_input(
+        context=vs2.as_retriever(),
+        question=prompt,
+        chat_history=chat_history_str
+    )
+    response = chain.invoke(combined_input)
+    
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         st.markdown(response)

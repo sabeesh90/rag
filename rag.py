@@ -83,8 +83,9 @@ if uploaded_files:
     st.success(f"{len(uploaded_files)} files uploaded.")
     documents = read_pdfs(uploaded_files)  # Read and display the content of the PDFs
     vs2 = DocArrayInMemorySearch.from_documents(documents, embeddings)
+    # {"context": vs2.as_retriever(), "question" : RunnablePassthrough(), "chat_history": RunnablePassthrough()}
     chain = (
-    {"context": vs2.as_retriever(), "question" : RunnablePassthrough(), "chat_history": RunnablePassthrough()}
+    {"context": vs2.as_retriever(), "question" : RunnablePassthrough()}
     | prompt
     | model
     | parser
@@ -114,22 +115,15 @@ if prompt := st.chat_input("Hei Sabeesh!"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    chat_history_str = format_chat_history(st.session_state.messages)
+    # chat_history_str = format_chat_history(st.session_state.messages)
 
-    # response = f"Echo: {prompt}"
-    # response = chain.invoke(prompt)
-    # response = chain.invoke({
-    #     "context": vs2.as_retriever(),
-    #     "question": prompt, 
-    #     "chat_history": chat_history_str
-    # })
-
-    combined_input = create_combined_input(
-        context=vs2.as_retriever(),
-        question=prompt,
-        chat_history=chat_history_str
-    )
-    response = chain.invoke(combined_input)
+    # combined_input = create_combined_input(
+    #     context=vs2.as_retriever(),
+    #     question=prompt,
+    #     chat_history=chat_history_str
+    # )
+    # response = chain.invoke(combined_input)
+    response = chain.invoke(prompt)
     
     # Display assistant response in chat message container
     with st.chat_message("assistant"):

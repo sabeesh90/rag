@@ -31,6 +31,7 @@ template = """
 There is a context i will prodive you based on that you can answer some questions. The answer should be detailed and scientiic. if possible inclcude equations.
 Context : {context}
 question : {question}
+chat_history {chat_history}
 """
 prompt  = ChatPromptTemplate.from_template(template)
 embeddings = OpenAIEmbeddings()
@@ -84,7 +85,7 @@ if uploaded_files:
     vs2 = DocArrayInMemorySearch.from_documents(documents, embeddings)
     # {"context": vs2.as_retriever(), "question" : RunnablePassthrough(), "chat_history": RunnablePassthrough()}
     chain = (
-    {"context": vs2.as_retriever(), "question" : RunnablePassthrough()}
+     {"context": vs2.as_retriever(), "question" : RunnablePassthrough(), "chat_history": RunnablePassthrough()}
     | prompt
     | model
     | parser
@@ -114,15 +115,15 @@ if prompt := st.chat_input("Hei Sabeesh!"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # chat_history_str = format_chat_history(st.session_state.messages)
+    chat_history_str = format_chat_history(st.session_state.messages)
 
-    # combined_input = create_combined_input(
-    #     context=vs2.as_retriever(),
-    #     question=prompt,
-    #     chat_history=chat_history_str
-    # )
-    # response = chain.invoke(combined_input)
-    response = chain.invoke(prompt)
+    combined_input = create_combined_input(
+        context=vs2.as_retriever(),
+        question=prompt,
+        chat_history=chat_history_str
+    )
+    response = chain.invoke(combined_input)
+    # response = chain.invoke(prompt)
     
     # Display assistant response in chat message container
     with st.chat_message("assistant"):

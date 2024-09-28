@@ -91,4 +91,8 @@ if uploaded_files:
 else:
     st.warning("Please upload one or more PDF files.")
 
+
+prompt = st.chat_input("Say something")
+if prompt:
+    st.write(f"User has sent the following prompt: {prompt}")
 st.write('Hello World')

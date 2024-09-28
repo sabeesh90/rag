@@ -36,24 +36,37 @@ chat_history {chat_history}
 """
 prompt  = ChatPromptTemplate.from_template(template)
 embeddings = OpenAIEmbeddings()
-# vs2 = FAISS.from_documents(documents, embeddings)
 
-# # fucntion to display an output 
-# # Function to detect and extract equations
-# def format_output(text):
-#     # Define a regex pattern to match LaTeX-style equations (inside brackets or similar)
-#     equation_pattern = re.compile(r'(\$.*?\$|\[.*?\]|\(.*?\))')  # Example pattern
-    
-#     # Find all equations in the text
-#     parts = equation_pattern.split(text)
-    
-#     for part in parts:
-#         if re.match(equation_pattern, part):
-#             # Render as LaTeX if it matches the equation pattern
-#             st.latex(part.strip("$[]()"))  # Clean up the surrounding symbols if needed
-#         else:
-#             # Render the rest as markdown
-#             st.markdown(part)
+def format_output(text):
+    # Enhanced regex pattern to match equations in brackets
+    equation_pattern = re.compile(r'\[([^]]+)\]')  # Matches equations in brackets
+    output_parts = []  # List to hold all parts for rendering
+
+    # Split the text into lines
+    parts = text.split("\n")  
+
+    for part in parts:
+        # Find all equations in the part
+        equations = equation_pattern.findall(part)  
+        # Split the part into equations and text
+        non_equations = equation_pattern.split(part)  
+
+        # Append non-equation text parts
+        for non_eq in non_equations:
+            if non_eq.strip():  # Avoid empty parts
+                output_parts.append(non_eq.strip())
+        
+        # Append equations found in the part
+        for eq in equations:
+            output_parts.append(eq.strip())  # Collect the equation without brackets
+
+    # Now render all parts, maintaining the order
+    for part in output_parts:
+        # Check if the part is an equation (contains LaTeX)
+        if part.startswith('\\'):  # This is a simple check to see if it's LaTeX
+            st.latex(part)  # Render the equation
+        else:
+            st.markdown(part)  # Render regular text
 
 def format_chat_history(messages):
     return "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])
@@ -143,8 +156,8 @@ if prompt := st.chat_input("Hei Sabeesh!"):
     
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        # format_output(response)
-        st.markdown(response)
+        format_output(response)
+        # st.markdown(response)
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
     

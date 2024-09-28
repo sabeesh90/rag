@@ -14,24 +14,19 @@ from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 import textwrap
 from IPython.display import display, Markdown, Latex
 
-
-def format_output(text):
-    # Wrap the text to a fixed width (e.g., 80 characters)
-    wrapped_text = textwrap.fill(text, width=80)
-    print(wrapped_text)
-
-
 # Access the API key from secrets
 api_key = st.secrets["OPENAI_API_KEY"]
+
 # Set the API key in the environment
 os.environ["OPENAI_API_KEY"] = api_key
+
 # defining the model here
 model = ChatOpenAI(model="gpt-4-turbo")
 
 # parser is to parse the output contents into more meaninful ormat
 parser = StrOutputParser()
 
-
+# this is the template that would takee an input and output an answer
 template = """
 There is a context i will prodive you based on that you can answer some questions. The answer should be detailed and scientiic. if possible inclcude equations.
 Context : {context}
@@ -41,7 +36,13 @@ prompt  = ChatPromptTemplate.from_template(template)
 embeddings = OpenAIEmbeddings()
 # vs2 = FAISS.from_documents(documents, embeddings)
 
+# fucntion to display an output 
+def format_output(text):
+    # Wrap the text to a fixed width (e.g., 80 characters)
+    wrapped_text = textwrap.fill(text, width=80)
+    print(wrapped_text)
 
+# function to read a pdf file
 def read_pdfs(uploaded_files):
     combined_pdfs = []  
     for pdf_file in uploaded_files:
@@ -63,9 +64,6 @@ def read_pdfs(uploaded_files):
     documents = text_splitter.split_documents(combined_pdfs)
     return documents
 
-      
-# Display the extracted text
-
 # Streamlit app layout
 st.title("Upload Multiple PDF Files")
 
@@ -84,15 +82,33 @@ if uploaded_files:
     | parser
     )
 
-    output = chain.invoke("How to enhane the performance of ERP andn EP detection. Explain in detail")
-    # display(Markdown(output))
-    st.markdown(output)
+    # output = chain.invoke("How to enhane the performance of ERP andn EP detection. Explain in detail")
+    # # display(Markdown(output))
+    # st.markdown(output)
   
 else:
     st.warning("Please upload one or more PDF files.")
 
 
-prompt = st.chat_input("Say something")
-if prompt:
-    st.write(f"User has sent the following prompt: {prompt}")
-st.write('Hello World')
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+    
+# Display chat messages from history on app rerun
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# React to user input
+if prompt := st.chat_input("What is up?"):
+    # Display user message in chat message container
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    
+
+# prompt = st.chat_input("I'm a custom RAG built on GPT-4")
+# if prompt:
+#     st.write(f"Human has sent the following : {prompt}")
+# st.write('Hello World')

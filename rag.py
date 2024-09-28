@@ -31,12 +31,17 @@ template = """
 There is a context i will prodive you based on that you can answer some questions. The answer should be detailed and scientiic. if possible inclcude equations.
 Context : {context}
 question : {question}
+chat_history : {chat_history}
 """
 prompt  = ChatPromptTemplate.from_template(template)
 embeddings = OpenAIEmbeddings()
 # vs2 = FAISS.from_documents(documents, embeddings)
 
 # fucntion to display an output 
+
+def format_chat_history(messages):
+    return "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])
+    
 def format_output(text):
     # Wrap the text to a fixed width (e.g., 80 characters)
     wrapped_text = textwrap.fill(text, width=80)
@@ -76,7 +81,7 @@ if uploaded_files:
     documents = read_pdfs(uploaded_files)  # Read and display the content of the PDFs
     vs2 = DocArrayInMemorySearch.from_documents(documents, embeddings)
     chain = (
-    {"context": vs2.as_retriever(), "question" : RunnablePassthrough()}
+    {"context": vs2.as_retriever(), "question" : RunnablePassthrough(), "chat_history": RunnablePassthrough()}
     | prompt
     | model
     | parser
@@ -106,8 +111,15 @@ if prompt := st.chat_input("Hei Sabeesh!"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
 
+    chat_history_str = format_chat_history(st.session_state.messages)
+
     # response = f"Echo: {prompt}"
-    response = chain.invoke(prompt)
+    # response = chain.invoke(prompt)
+    response = chain.invoke({
+        "context": vs2.as_retriever(),
+        "question": prompt, 
+        "chat_history": chat_history_str
+    })
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         st.markdown(response)

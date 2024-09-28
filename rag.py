@@ -89,7 +89,6 @@ if uploaded_files:
 else:
     st.warning("Please upload one or more PDF files.")
 
-
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -100,7 +99,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # React to user input
-if prompt := st.chat_input("What is up?"):
+if prompt := st.chat_input("Hei Sabeesh!"):
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -108,7 +107,7 @@ if prompt := st.chat_input("What is up?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     # response = f"Echo: {prompt}"
-    response = chain.invoke("How to enhane the performance of ERP andn EP detection. Explain in detail")
+    response = chain.invoke(prompt)
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         st.markdown(response)

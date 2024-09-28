@@ -31,7 +31,6 @@ template = """
 There is a context i will prodive you based on that you can answer some questions. The answer should be detailed and scientiic. if possible inclcude equations.
 Context : {context}
 question : {question}
-chat_history : {chat_history}
 """
 prompt  = ChatPromptTemplate.from_template(template)
 embeddings = OpenAIEmbeddings()

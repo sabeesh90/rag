@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import os 
 import re
 from langchain_openai.chat_models import ChatOpenAI
@@ -14,6 +15,7 @@ from langchain_community.vectorstores import DocArrayInMemorySearch, InMemoryVec
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 import textwrap
 from IPython.display import display, Markdown, Latex
+import streamlit.components.v1 as components
 
 # Access the API key from secrets
 api_key = st.secrets["OPENAI_API_KEY"]
@@ -36,6 +38,19 @@ chat_history {chat_history}
 """
 prompt  = ChatPromptTemplate.from_template(template)
 embeddings = OpenAIEmbeddings()
+
+
+
+def display_html_equation(equation):
+    html = f"""
+    <html>
+        <body>
+            <h1 style="text-align:center;">{equation}</h1>
+        </body>
+    </html>
+    """
+    components.html(html, height=400)
+
 
 def format_chat_history(messages):
     return "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])
@@ -122,7 +137,8 @@ if prompt := st.chat_input("Hei Sabeesh!"):
     
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        st.markdown(response, unsafe_allow_html=True)
+        # st.markdown(response, unsafe_allow_html=True)
+        display_html_equation(response)
         
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})

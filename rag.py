@@ -21,7 +21,7 @@ api_key = st.secrets["OPENAI_API_KEY"]
 os.environ["OPENAI_API_KEY"] = api_key
 
 # defining the model here
-model = ChatOpenAI(model="gpt-4-turbo")
+model = ChatOpenAI(model="gpt-4o")
 
 # parser is to parse the output contents into more meaninful ormat
 parser = StrOutputParser()

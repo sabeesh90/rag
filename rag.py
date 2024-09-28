@@ -143,7 +143,7 @@ if prompt := st.chat_input("Hei Sabeesh!"):
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         # st.markdown(response, unsafe_allow_html=True)
-        display_html_equation(response)
+        display_latex_content(response)
         
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})

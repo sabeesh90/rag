@@ -1,5 +1,6 @@
 import streamlit as st
 import os 
+import re
 from langchain_openai.chat_models import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
 from langchain.prompts import ChatPromptTemplate
@@ -38,6 +39,21 @@ embeddings = OpenAIEmbeddings()
 # vs2 = FAISS.from_documents(documents, embeddings)
 
 # fucntion to display an output 
+# Function to detect and extract equations
+def format_output(text):
+    # Define a regex pattern to match LaTeX-style equations (inside brackets or similar)
+    equation_pattern = re.compile(r'(\$.*?\$|\[.*?\]|\(.*?\))')  # Example pattern
+    
+    # Find all equations in the text
+    parts = equation_pattern.split(text)
+    
+    for part in parts:
+        if re.match(equation_pattern, part):
+            # Render as LaTeX if it matches the equation pattern
+            st.latex(part.strip("$[]()"))  # Clean up the surrounding symbols if needed
+        else:
+            # Render the rest as markdown
+            st.markdown(part)
 
 def format_chat_history(messages):
     return "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])
@@ -127,7 +143,8 @@ if prompt := st.chat_input("Hei Sabeesh!"):
     
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        st.markdown(response)
+        format_output(response)
+        # st.markdown(response)
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
     

@@ -41,16 +41,21 @@ embeddings = OpenAIEmbeddings()
 
 
 
-def display_html_equation(equation):
-    html = f"""
+def display_latex_content(content):
+    html_content = f"""
     <html>
+        <head>
+            <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+            <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        </head>
         <body>
-            <h1 style="text-align:center;">{equation}</h1>
+            <div style="font-size: 20px; line-height: 1.6;">
+                {content}
+            </div>
         </body>
     </html>
     """
-    components.html(html, height=400)
-
+    components.html(html_content, height=400)
 
 def format_chat_history(messages):
     return "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])

@@ -107,15 +107,12 @@ if prompt := st.chat_input("What is up?"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    response = f"Echo: {prompt}"
+    # response = f"Echo: {prompt}"
+    response = chain.invoke("How to enhane the performance of ERP andn EP detection. Explain in detail")
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         st.markdown(response)
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
     
-
-# prompt = st.chat_input("I'm a custom RAG built on GPT-4")
-# if prompt:
-#     st.write(f"Human has sent the following : {prompt}")
-# st.write('Hello World')
+    

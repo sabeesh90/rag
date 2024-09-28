@@ -38,24 +38,35 @@ chat_history {chat_history}
 """
 prompt  = ChatPromptTemplate.from_template(template)
 embeddings = OpenAIEmbeddings()
-
-
-
 def display_latex_content(content):
     html_content = f"""
     <html>
         <head>
             <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
             <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    background-color: #f9f9f9; /* Light background for better visibility */
+                    color: #333; /* Dark font color for contrast */
+                }}
+                .scrollable {{
+                    max-height: 400px; /* Set maximum height for scrolling */
+                    overflow-y: auto; /* Enable vertical scrolling */
+                    padding: 10px;
+                    border: 1px solid #ccc; /* Optional border for visual separation */
+                    background-color: #ffffff; /* White background for the text area */
+                }}
+            </style>
         </head>
         <body>
-            <div style="font-size: 20px; line-height: 1.6;">
+            <div class="scrollable">
                 {content}
             </div>
         </body>
     </html>
     """
-    components.html(html_content, height=400)
+    components.html(html_content, height=450)
 
 def format_chat_history(messages):
     return "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])

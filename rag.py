@@ -37,6 +37,35 @@ chat_history {chat_history}
 prompt  = ChatPromptTemplate.from_template(template)
 embeddings = OpenAIEmbeddings()
 
+
+def format_output(text):
+    # Regular expression to find equations enclosed in brackets
+    equation_pattern = re.compile(r'\[([^]]+)\]')
+    output_parts = []
+
+    # Split the text into lines
+    parts = text.split("\n")
+
+    for part in parts:
+        # Find all equations in the part
+        equations = equation_pattern.findall(part)
+        # Split the part into equations and non-equation text
+        non_equations = equation_pattern.split(part)
+
+        # Append non-equation text parts
+        for non_eq in non_equations:
+            if non_eq.strip():  # Avoid adding empty strings
+                output_parts.append(non_eq.strip())
+
+        # Append equations found in the part
+        for eq in equations:
+            output_parts.append(f"${eq.strip()}$")  # Format for LaTeX
+
+    # Combine all parts into a single string, preserving order
+    formatted_output = "<br>".join(output_parts)  # Use HTML line breaks
+
+    return formatted_output
+
 def format_chat_history(messages):
     return "\n".join([f"{msg['role']}: {msg['content']}" for msg in messages])
     
@@ -118,12 +147,12 @@ if prompt := st.chat_input("Hei Sabeesh!"):
         chat_history=chat_history_str
     )
     response = chain.invoke(combined_input)
+    response = format_output(response) 
     # response = chain.invoke(prompt)
     
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        # format_output(response)
-        st.write(response)
+        # format_output(response
         st.markdown(response)
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})

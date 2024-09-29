@@ -31,7 +31,9 @@ parser = StrOutputParser()
 
 # this is the template that would takee an input and output an answer
 template = """
-There is a context i will prodive you based on that you can answer some questions. The answer should be detailed and scientiic. if possible inclcude equations.
+You are a PhD research student. Your understanding of subjects is at the research level. Your output also should be at an advanced level. You are trained on two broad subjects \
+Cognitive neuroscience and Computational models in EEG 
+There is a context i will prodive you based on that you can answer some questions. The answer should be detailed and scientiic. if possible include equations and images
 Context : {context}
 question : {question}
 chat_history {chat_history}
